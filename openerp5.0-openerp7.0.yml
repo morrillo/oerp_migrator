@@ -1,0 +1,23 @@
+origin:
+    hostname: localhost
+    port: 8069
+    protocol: xmlrpc
+    version: 5
+    dbname: biomed
+    username: admin
+    password: ionyte
+
+
+destination:
+    hostname: localhost
+    port: 18069
+    protocol: jsonrpc
+    version: 7
+    dbname: biomed_70
+    username: admin
+    password: admin
+
+res.country.state:
+    sequence: 1
+    fields: code,country_id,name
+
