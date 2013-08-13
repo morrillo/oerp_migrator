@@ -122,7 +122,6 @@ def main(configfile_parm = ''):
 	for model,fields in dict_models.items():
 		if model[0] != "#":
 			migrate_model(oerp_origen,oerp_destino,model,fields)	
-	import pdb;pdb.set_trace()
 	logging.getLogger(__name__).info("Fin migración")
 	exit(0)
 
