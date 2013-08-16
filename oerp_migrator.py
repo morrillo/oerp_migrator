@@ -46,9 +46,11 @@ def read_models(config=None,section=None):
 		exit(1)
 	return_dict = {}
 	for dict_keys in config.keys():
+		return_dict[dict_keys] = {}
 		if dict_keys not in ['origin','destination']:
 			fields = config[dict_keys]['fields']
-			return_dict[dict_keys] = fields.split(',')
+			return_dict[dict_keys]['sequence'] = config[dict_keys]['sequence']
+			return_dict[dict_keys]['fields'] = fields.split(',')
 	return return_dict
 
 def connect_openerp(dict_parms = None):
@@ -118,10 +120,16 @@ def main(configfile_parm = ''):
 	dict_models = read_models(dict_yaml,"objetos")
 	oerp_origen = connect_openerp(dict_origin)
 	oerp_destino = connect_openerp(dict_destination)
+	highest = 0
+	for key in dict_models.keys():
+		if 'sequence' in dict_models[key]:
+			if dict_models[key]['sequence'] > highest:
+				highest = dict_models[key]['sequence']
 
-	for model,fields in dict_models.items():
-		if model[0] != "#":
-			migrate_model(oerp_origen,oerp_destino,model,fields)	
+	for index in range(highest+1):
+		for model,fields in dict_models.items():
+			if model[0] !="#" and model not in ['origin','destination'] and fields['sequence'] == index:
+				migrate_model(oerp_origen,oerp_destino,model,fields['fields'])	
 	logging.getLogger(__name__).info("Fin migración")
 	exit(0)
 

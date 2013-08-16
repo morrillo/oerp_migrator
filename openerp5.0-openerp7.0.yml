@@ -13,7 +13,7 @@ destination:
     port: 18069
     protocol: jsonrpc
     version: 7
-    dbname: biomed_70
+    dbname: biomed_70_1
     username: admin
     password: admin
 
