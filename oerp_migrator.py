@@ -92,7 +92,7 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 						if dict_insert_field <> 0:
 							dict_insert[field] = dict_insert_field
 						else:
-							dict_insert[field] = data[field].id
+							dict_insert[field] = data[field][0]
 					else:
 						if field_types[field][2]:
 							dict_insert[field] = 1
