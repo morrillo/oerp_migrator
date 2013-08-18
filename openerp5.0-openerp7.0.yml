@@ -26,12 +26,12 @@ res.bank:
 res.partner:
     sequence: 2
     fields: name,ref,city,comment,ean13,active,date,lang,customer,supplier,credit_limit,website,vat
-#product.uom.categ:
+product.uom.categ:
     sequence: 3
     fields: name
-#product.ul:
+product.ul:
     sequence: 4
     fields: name,type
-#product.category:
+product.category:
     sequence: 5
     fields: name,parent_id

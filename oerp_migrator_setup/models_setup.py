@@ -31,3 +31,33 @@ class res_bank(osv.osv):
 		}
 	
 res_bank()
+
+class product_uom_categ(osv.osv):
+	_name = "product.uom.categ"
+	_inherit = "product.uom.categ"
+	
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+	
+product_uom_categ()
+
+class product_ul(osv.osv):
+	_name = "product.ul"
+	_inherit = "product.ul"
+	
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+	
+product_ul()
+
+class product_category(osv.osv):
+	_name = "product.category"
+	_inherit = "product.category"
+	
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+	
+product_category()

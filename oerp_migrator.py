@@ -113,6 +113,28 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 	logging.getLogger(__name__).info("Fin migración modelo %s"%(model))
 	return None
 
+def validate_setup(dict_models = {}, oerp_destino = {}):
+	if not dict_models:
+		logging.getLogger(__name__).error("No dict_models parameter in validate_setup")
+		return False
+	if not oerp_destino:
+		logging.getLogger(__name__).error("No oerp_destino parameter in validate_setup")
+		return False
+
+	for model in dict_models.keys():
+		if model not in ['origin','destination']:
+		        args = [('model','=',model)]
+        		fields = ['name','ttype','relation','required']
+	        	model_search = 'ir.model.fields'
+	        	args = [('model','=',model),('name','=','origin_id')]
+		        sock = oerp_destino['sock']
+        		origin_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],model_search,'search',args)
+			if not origin_ids:
+				return False
+	
+	return True
+
+
 def main(configfile_parm = ''):
 
 	logging.basicConfig(level=logging.DEBUG)
@@ -120,7 +142,7 @@ def main(configfile_parm = ''):
 	stream = file(configfile_parm,'r')
 	dict_yaml = yaml.safe_load(stream)
 	if not dict_yaml['origin'] or not dict_yaml['destination']:
-		loggin.getLogger(__name__).error('No origin/destination specified in yaml file.')
+		logging.getLogger(__name__).error('No origin/destination specified in yaml file.')
 		exit(1)
 	dict_origin = dict_yaml['origin']	
 	logging.getLogger(__name__).info("Origin host: %s port: %s database: %s"%(dict_origin['hostname'],dict_origin['port'],dict_origin['dbname']))
@@ -129,6 +151,9 @@ def main(configfile_parm = ''):
 	dict_models = read_models(dict_yaml,"objetos")
 	oerp_origen = connect_openerp(dict_origin)
 	oerp_destino = connect_openerp(dict_destination)
+	if not validate_setup(dict_models,oerp_destino):
+		logging.getLogger(__name__).error("First you need to install the oerp_migrator_setup module in your OpenERP database.")
+		exit(1)
 	highest = 0
 	for key in dict_models.keys():
 		if 'sequence' in dict_models[key]:
