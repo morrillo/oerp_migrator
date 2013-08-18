@@ -102,7 +102,14 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 		#	import pdb;pdb.set_trace()
 		logging.getLogger(__name__).debug(dict_insert)
 		sock_destino = oerp_destino['sock']
-		data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'], model,'create',dict_insert)
+		destination_ids = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'], \
+			model,'search',[('origin_id','=',data['id'])])
+		if destination_ids:
+			data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+				 model,'write',destination_ids,dict_insert)
+		else:
+			data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+				 model,'create',dict_insert)
 	logging.getLogger(__name__).info("Fin migración modelo %s"%(model))
 	return None
 
