@@ -17,19 +17,19 @@ destination:
     username: admin
     password: admin
 
-#res.country.state:
+res.country.state:
     sequence: 1
     fields: code,country_id,name
-#res.bank:
+res.bank:
     sequence: 1
     fields: active,bic,city,country,city,fax,code,name,phone,state,street,street2,zip
-#res.partner:
+res.partner:
     sequence: 2
     fields: name,ref,city,comment,ean13,active,date,lang,customer,supplier,credit_limit,website,vat
-#product.uom.categ:
+product.uom.categ:
     sequence: 3
     fields: name
-#product.ul:
+product.ul:
     sequence: 4
     fields: name,type
 product.category:

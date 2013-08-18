@@ -96,6 +96,8 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 					else:
 						if field_types[field][2]:
 							dict_insert[field] = 1
+		if 'id' not in dict_insert.keys():
+			dict_insert['origin_id'] = data['id']
 		#if model == 'res.partner':
 		#	import pdb;pdb.set_trace()
 		logging.getLogger(__name__).debug(dict_insert)
