@@ -83,19 +83,25 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 	for data in data_items:
 		dict_insert = {}
 		for field in fields:
-			if field_types[field][0] not in ['many2many','one2many','many2one']:
-				dict_insert[field] = data[field]
-			else:
-				if field_types[field][0] == 'many2one':
-					if data[field]:
-						dict_insert_field = get_lookup_ids(oerp_destino,field_types[field][1],data[field])
-						if dict_insert_field <> 0:
-							dict_insert[field] = dict_insert_field
-						else:
-							dict_insert[field] = data[field][0]
+			if field in field_types:
+				if field_types[field][0] not in ['many2many','one2many','many2one']:
+					if field_types[field][0] != 'boolean' and data[field]:
+						# if field_types[field][0] == 'char':
+						dict_insert[field] = data[field]
 					else:
-						if field_types[field][2]:
-							dict_insert[field] = 1
+						if data[field]:
+							dict_insert[field] = data[field]
+				else:
+					if field_types[field][0] == 'many2one':
+						if data[field]:
+							dict_insert_field = get_lookup_ids(oerp_destino,field_types[field][1],data[field])
+							if dict_insert_field <> 0:
+								dict_insert[field] = dict_insert_field
+							else:
+								dict_insert[field] = data[field][0]
+						else:
+							if field_types[field][2]:
+								dict_insert[field] = 1
 		if 'id' not in dict_insert.keys():
 			dict_insert['origin_id'] = data['id']
 		#if model == 'res.partner':
@@ -108,8 +114,11 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 			data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
 				 model,'write',destination_ids,dict_insert)
 		else:
-			data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
-				 model,'create',dict_insert)
+			try:
+				data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+					 model,'create',dict_insert)
+			except:
+				pass
 	logging.getLogger(__name__).info("Fin migración modelo %s"%(model))
 	return None
 
@@ -130,6 +139,7 @@ def validate_setup(dict_models = {}, oerp_destino = {}):
 		        sock = oerp_destino['sock']
         		origin_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],model_search,'search',args)
 			if not origin_ids:
+				logging.getLogger(__name__).error("Model "+model+" does not have origin_id column")
 				return False
 	
 	return True

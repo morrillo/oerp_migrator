@@ -2,6 +2,15 @@ from openerp.osv import osv,fields
 import urllib as u
 import string
 
+class res_users(osv.osv):
+	_name = "res.users"
+	_inherit = "res.users"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+res_users()
+
 class res_partner(osv.osv):
 	_name = "res.partner"
 	_inherit = "res.partner"
@@ -61,3 +70,23 @@ class product_category(osv.osv):
 		}
 	
 product_category()
+
+class product_template(osv.osv):
+	_name = "product.template"
+	_inherit = "product.template"
+	
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+	
+product_template()
+
+class product_product(osv.osv):
+	_name = "product.product"
+	_inherit = "product.product"
+	
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+	
+product_product()
