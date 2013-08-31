@@ -29,7 +29,7 @@ def get_field_type(oerp_origen,model):
 	return return_dict
 
 def get_lookup_ids(oerp_destino=None,relation_parm=None,ids_parm=None):
-	
+
 	if not oerp_destino or not relation_parm or not ids_parm:
 		import pdb;pdb.set_trace()
 		exit(1)
@@ -38,6 +38,14 @@ def get_lookup_ids(oerp_destino=None,relation_parm=None,ids_parm=None):
         obj_destino_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],relation_parm,'search',args)
 	if obj_destino_ids:
 		return obj_destino_ids[0]
+	else:
+		#import pdb;pdb.set_trace()
+		args = [('origin_id','=',ids_parm[0])]
+        	obj_destino_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],relation_parm,'search',args)
+		if obj_destino_ids:
+			return obj_destino_ids[0]
+		else:
+			return 0	
 	return 0
 	
 
@@ -104,8 +112,6 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 								dict_insert[field] = 1
 		if 'id' not in dict_insert.keys():
 			dict_insert['origin_id'] = data['id']
-		#if model == 'res.partner':
-		#	import pdb;pdb.set_trace()
 		logging.getLogger(__name__).debug(dict_insert)
 		sock_destino = oerp_destino['sock']
 		destination_ids = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'], \
@@ -118,6 +124,7 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 				data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
 					 model,'create',dict_insert)
 			except:
+				import pdb;pdb.set_trace()
 				pass
 	logging.getLogger(__name__).info("Fin migración modelo %s"%(model))
 	return None

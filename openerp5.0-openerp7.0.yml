@@ -1,9 +1,10 @@
+---
 origin:
     hostname: localhost
     port: 8069
     protocol: xmlrpc
     version: 5
-    dbname: biomed
+    dbname: _biomed
     username: admin
     password: ionyte
 
@@ -23,40 +24,42 @@ res.users:
 res.country.state:
     sequence: 1
     fields: code,country_id,name
-#res.bank:
+res.bank:
     sequence: 1
     fields: active,bic,city,country,city,fax,code,name,phone,state,street,street2,zip
-#res.partner:
+res.partner:
     sequence: 2
     fields: name,ref,city,comment,ean13,active,date,lang,customer,supplier,credit_limit,website,vat
-#product.uom.categ:
+product.uom.categ:
     sequence: 3
     fields: name
-#product.ul:
+product.ul:
     sequence: 4
     fields: name,type
-#product.category:
+product.category:
     sequence: 5
     fields: name,parent_id
-# product.template:
+product.template:
     sequence: 6
     fields: categ_id,company_id,cost_method,description,description_purchase,description_sale,list_price,mes_type,name,produce_delay,product_manager,property_account_expense,property_account_income,rental,sale_ok,seller_ids,standard_price,state,supplier_taxes_id,taxes_id,type,uom_id,uom_po_id,uos_coeff,uos_id,volume,weight_net
-#product.product:
+product.product:
     sequence: 7
     fields: active,code,default_code,ean13,incoming_qty,lst_price,name_template,outgoing_qty,packaging,partner_ref,price,price_extra,price_margin,product_tmpl_id,qty_available,seller_delay,seller_qty,variants,virtual_available
-#account.payment.term:
+account.payment.term:
     sequence: 8
     fields: active,name,note
-#account.fiscalyear:
+account.fiscalyear:
     sequence: 8
     fields: code,company_id,date_start,date_stop,name,state
-#account.payment.term.line:
+account.payment.term.line:
     sequence: 9
     fields: days,days2,payment_id,value,value_amount
-#account.period:
+account.period:
     sequence: 9
     fields: code,company_id,date_start,date_stop,fiscalyear_id,name,special,state
-# account.invoice
-# account.invoice:
+account.invoice:
     sequence: 100
-    fields: account_id,amount_tax,amount_total,amount_untaxed,check_total,comment,commercial_partner_id,company_id,currency_id,date_due,date_invoice,fiscal_position,internal_number,invoice_line,journal_id,name,number,origin,partner_bank_id,partner_id,reconciled,reference,reference_type,residual,sent,state,supplier_invoice_number,type,user_id
+    fields: account_id,amount_tax,amount_total,amount_untaxed,check_total,comment,commercial_partner_id,company_id,currency_id,date_due,date_invoice,fiscal_position,internal_number,invoice_line,journal_id,name,number,origin,partner_bank_id,partner_id,reconciled,reference,reference_type,residual,sent,state,supplier_invoice_number,type
+account.invoice.line:
+    sequence: 110
+    fields: discount,invoice_id,name,origin,partner_id,price_subtotal,price_unit,product_id,quantity,sequence
