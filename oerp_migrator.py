@@ -41,11 +41,15 @@ def get_lookup_ids(oerp_destino=None,relation_parm=None,ids_parm=None):
 	else:
 		#import pdb;pdb.set_trace()
 		args = [('origin_id','=',ids_parm[0])]
-        	obj_destino_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],relation_parm,'search',args)
-		if obj_destino_ids:
-			return obj_destino_ids[0]
+		try:
+	        	obj_destino_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],relation_parm,'search',args)
+			if obj_destino_ids:
+				return obj_destino_ids[0]
+			else:
+				return 0	
 		else:
-			return 0	
+			logging.error("Problem looking up id for %s. Assigning default value"%(relation_parm)
+			return 1
 	return 0
 	
 
@@ -80,7 +84,7 @@ def connect_openerp(dict_parms = None):
 def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields = None):
 	if not oerp_origen or not oerp_destino or not model or not fields:
 		exit(1)
-	logging.getLogger(__name__).info("Migrando modelo %s"%(model))
+	logging.info("Migrando modelo %s"%(model))
 	
 	# data_obj = oerp_origen.get(model)
 	sock = oerp_origen['sock']	
@@ -112,7 +116,7 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 								dict_insert[field] = 1
 		if 'id' not in dict_insert.keys():
 			dict_insert['origin_id'] = data['id']
-		logging.getLogger(__name__).debug(dict_insert)
+		logging.debug(dict_insert)
 		sock_destino = oerp_destino['sock']
 		destination_ids = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'], \
 			model,'search',[('origin_id','=',data['id'])])
@@ -126,15 +130,15 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 			except:
 				import pdb;pdb.set_trace()
 				pass
-	logging.getLogger(__name__).info("Fin migración modelo %s"%(model))
+	logging.info("Fin migración modelo %s"%(model))
 	return None
 
 def validate_setup(dict_models = {}, oerp_destino = {}):
 	if not dict_models:
-		logging.getLogger(__name__).error("No dict_models parameter in validate_setup")
+		logging.error("No dict_models parameter in validate_setup")
 		return False
 	if not oerp_destino:
-		logging.getLogger(__name__).error("No oerp_destino parameter in validate_setup")
+		logging.error("No oerp_destino parameter in validate_setup")
 		return False
 
 	for model in dict_models.keys():
@@ -146,7 +150,7 @@ def validate_setup(dict_models = {}, oerp_destino = {}):
 		        sock = oerp_destino['sock']
         		origin_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],model_search,'search',args)
 			if not origin_ids:
-				logging.getLogger(__name__).error("Model "+model+" does not have origin_id column")
+				logging.error("Model "+model+" does not have origin_id column")
 				return False
 	
 	return True
@@ -154,22 +158,25 @@ def validate_setup(dict_models = {}, oerp_destino = {}):
 
 def main(configfile_parm = ''):
 
-	logging.basicConfig(level=logging.DEBUG)
-	logging.getLogger(__name__).info("Comenzando la migración")
+	logging.basicConfig(filename='/home/gustavo/work/biomed/migrator.log',level=logging.DEBUG)
+	logging.info("Comenzando la migración")
 	stream = file(configfile_parm,'r')
 	dict_yaml = yaml.safe_load(stream)
 	if not dict_yaml['origin'] or not dict_yaml['destination']:
-		logging.getLogger(__name__).error('No origin/destination specified in yaml file.')
+		logging.error('No origin/destination specified in yaml file.')
 		exit(1)
 	dict_origin = dict_yaml['origin']	
-	logging.getLogger(__name__).info("Origin host: %s port: %s database: %s"%(dict_origin['hostname'],dict_origin['port'],dict_origin['dbname']))
+	logging.info("Origin host: %s port: %s database: %s"%(dict_origin['hostname'],dict_origin['port'],dict_origin['dbname']))
 	dict_destination = dict_yaml['destination']
-	logging.getLogger(__name__).info("Destination host: %s port: %s database: %s"%(dict_destination['hostname'],dict_destination['port'],dict_destination['dbname']))
+	logging.info("Destination host: %s port: %s database: %s"%(dict_destination['hostname'],dict_destination['port'],dict_destination['dbname']))
 	dict_models = read_models(dict_yaml,"objetos")
+	for key,value in dict_models.items():
+		logging.info(key)
+		logging.info(value)
 	oerp_origen = connect_openerp(dict_origin)
 	oerp_destino = connect_openerp(dict_destination)
 	if not validate_setup(dict_models,oerp_destino):
-		logging.getLogger(__name__).error("First you need to install the oerp_migrator_setup module in your OpenERP database.")
+		logging.error("First you need to install the oerp_migrator_setup module in your OpenERP database.")
 		exit(1)
 	highest = 0
 	for key in dict_models.keys():
@@ -181,7 +188,7 @@ def main(configfile_parm = ''):
 		for model,fields in dict_models.items():
 			if model[0] !="#" and model not in ['origin','destination'] and fields['sequence'] == index:
 				migrate_model(oerp_origen,oerp_destino,model,fields['fields'])	
-	logging.getLogger(__name__).info("Fin migración")
+	logging.info("Fin migración")
 	exit(0)
 
 if __name__ == "__main__":

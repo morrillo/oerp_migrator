@@ -18,9 +18,9 @@ destination:
     username: admin
     password: admin
 
-res.users:
-    sequence: 1
-    fields: active,company_id,login,partner_id,password,signature,state,user_email
+#res.users:
+#    sequence: 1
+#    fields: active,company_id,login,partner_id,password,signature,state,user_email
 res.country.state:
     sequence: 1
     fields: code,country_id,name
