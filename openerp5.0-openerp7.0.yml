@@ -39,12 +39,15 @@ destination:
 #product.category:
 #    sequence: 5
 #    fields: name,parent_id
+#product.uom:
+#     sequence: 5
+#     fields: active,category_id,factor,factor_inv,name,rounding,uom_type
 #product.template:
 #    sequence: 6
 #    fields: categ_id,company_id,cost_method,description,description_purchase,description_sale,list_price,mes_type,name,produce_delay,product_manager,property_account_expense,property_account_income,rental,sale_ok,seller_ids,standard_price,state,supplier_taxes_id,taxes_id,type,uom_id,uom_po_id,uos_coeff,uos_id,volume,weight_net
-#product.product:
-#    sequence: 7
-#    fields: active,code,default_code,ean13,incoming_qty,lst_price,name_template,outgoing_qty,packaging,partner_ref,price,price_extra,price_margin,product_tmpl_id,qty_available,seller_delay,seller_qty,variants,virtual_available
+product.product:
+    sequence: 7
+    fields: active,code,default_code,ean13,incoming_qty,lst_price,name_template,outgoing_qty,packaging,partner_ref,price,price_extra,price_margin,product_tmpl_id,qty_available,seller_delay,seller_qty,variants,virtual_available
 #account.payment.term:
 #    sequence: 8
 #    fields: active,name,note
