@@ -47,8 +47,8 @@ def get_lookup_ids(oerp_destino=None,relation_parm=None,ids_parm=None):
 				return obj_destino_ids[0]
 			else:
 				return 0	
-		else:
-			logging.error("Problem looking up id for %s. Assigning default value"%(relation_parm)
+		except:
+			logging.error("Problem looking up id for %s. Assigning default value"%(relation_parm))
 			return 1
 	return 0
 	

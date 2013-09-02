@@ -149,3 +149,30 @@ class account_invoice_line(osv.osv):
 		'origin_id': fields.integer('Origin ID'),
 		}
 account_invoice_line()
+
+class product_uom(osv.osv):
+	_name = "product.uom"
+	_inherit = "product.uom"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+product_uom()
+
+class account_account(osv.osv):
+	_name = "account.account"
+	_inherit = "account.account"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+account_account()
+
+class res_company(osv.osv):
+	_name = "res.company"
+	_inherit = "res.company"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+res_company()
