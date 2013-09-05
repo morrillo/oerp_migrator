@@ -8,7 +8,23 @@ import sys
 import ConfigParser
 import pdb
 import logging
+from datetime import date
 
+def get_date_from(oerp_destino=None):
+
+	if not oerp_destino:
+		import pdb;pdb.set_trace()
+		exit(1)
+	args = [('key','=','oerp_migrator_date_from')]
+        sock = oerp_destino['sock']
+        parameter_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],'ir.config_parameter','search',args)
+	if not parameter_ids:
+		return ''
+        data = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],'ir.config_parameter','read',parameter_ids,['value'])
+	if data:
+		return data['value']
+	else:
+		return ''
 
 def get_field_type(oerp_origen,model):
 
@@ -88,7 +104,10 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 	
 	# data_obj = oerp_origen.get(model)
 	sock = oerp_origen['sock']	
-	data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
+	if get_date_from(oerp_destino) == '':
+		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
+	else:
+		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
 	field_types = get_field_type(oerp_origen,model)
 	data_items = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'read',data_ids,fields)
 
@@ -188,6 +207,19 @@ def main(configfile_parm = ''):
 		for model,fields in dict_models.items():
 			if model[0] !="#" and model not in ['origin','destination'] and fields['sequence'] == index:
 				migrate_model(oerp_origen,oerp_destino,model,fields['fields'])	
+	args = [('key','=','oerp_migrator_date_from')]
+        sock = oerp_destino['sock']
+        parameter_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],'ir.config_parameter','search',args)
+	today = str(date.now())
+	vals_parameter = { 'key': 'oerp_migrator_date_from',
+			   'value': today }
+	if not parameter_ids:
+		ret_parameter_ids = soc.execute(oerp_destino['dbname',oerp_destino['uid'],oerp_destino['pwd'],\
+			'ir.config_parameter','create',vals_parameter)	
+	else:
+		ret_parameter_ids = soc.execute(oerp_destino['dbname',oerp_destino['uid'],oerp_destino['pwd'],\
+			'ir.config_parameter','write',parameter_ids,vals_parameter)	
+
 	logging.info("Fin migración")
 	exit(0)
 
