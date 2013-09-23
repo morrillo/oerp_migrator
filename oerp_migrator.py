@@ -9,22 +9,7 @@ import ConfigParser
 import pdb
 import logging
 from datetime import date
-
-def get_date_from(oerp_destino=None):
-
-	if not oerp_destino:
-		import pdb;pdb.set_trace()
-		exit(1)
-	args = [('key','=','oerp_migrator_date_from')]
-        sock = oerp_destino['sock']
-        parameter_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],'ir.config_parameter','search',args)
-	if not parameter_ids:
-		return ''
-        data = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],'ir.config_parameter','read',parameter_ids,['value'])
-	if data:
-		return data['value']
-	else:
-		return ''
+from datetime import datetime
 
 def get_field_type(oerp_origen,model):
 
@@ -77,6 +62,11 @@ def read_models(config=None,section=None):
 		return_dict[dict_keys] = {}
 		if dict_keys not in ['origin','destination']:
 			fields = config[dict_keys]['fields']
+			if 'filter' in config[dict_keys].keys():
+				_filter = config[dict_keys]['filter']
+			else:
+				_filter = ''
+			return_dict[dict_keys]['filter'] = _filter
 			return_dict[dict_keys]['sequence'] = config[dict_keys]['sequence']
 			return_dict[dict_keys]['fields'] = fields.split(',')
 	return return_dict
@@ -87,6 +77,7 @@ def connect_openerp(dict_parms = None):
 		# Get the uid
 	dict_connection = {}
 	sock_common = xmlrpclib.ServerProxy ('http://'+dict_parms['hostname']+':'+str(dict_parms['port'])+'/xmlrpc/common')
+	# import pdb;pdb.set_trace()
 	uid = sock_common.login(dict_parms['dbname'], dict_parms['username'], dict_parms['password'])
 
 	#replace localhost with the address of the server
@@ -97,18 +88,27 @@ def connect_openerp(dict_parms = None):
 	dict_connection['sock'] = sock
 	return dict_connection
 
-def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields = None):
+def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields = None, filter_parm = ''):
 	if not oerp_origen or not oerp_destino or not model or not fields:
 		exit(1)
 	logging.info("Migrando modelo %s"%(model))
 	
 	# data_obj = oerp_origen.get(model)
-	sock = oerp_origen['sock']	
-	if get_date_from(oerp_destino) == '':
+	sock = oerp_origen['sock']
+	if filter_parm == '':	
 		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
 	else:
 		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
+	#if get_date_from(oerp_destino) == '':
+	#	data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
+	#else:
+	#	date_from = get_date_from(oerp_destino)
+	#	date_object = datetime.strptime(date_from,'%Y-%m-%d')
+	#	import pdb;pdb.set_trace()
+	#	data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',\
+	#		[('create_date','>',date_from)])
 	field_types = get_field_type(oerp_origen,model)
+	fields.append('create_date')
 	data_items = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'read',data_ids,fields)
 
 	for data in data_items:
@@ -206,19 +206,8 @@ def main(configfile_parm = ''):
 	for index in range(highest+1):
 		for model,fields in dict_models.items():
 			if model[0] !="#" and model not in ['origin','destination'] and fields['sequence'] == index:
-				migrate_model(oerp_origen,oerp_destino,model,fields['fields'])	
-	args = [('key','=','oerp_migrator_date_from')]
-        sock = oerp_destino['sock']
-        parameter_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],'ir.config_parameter','search',args)
-	today = str(date.now())
-	vals_parameter = { 'key': 'oerp_migrator_date_from',
-			   'value': today }
-	if not parameter_ids:
-		ret_parameter_ids = soc.execute(oerp_destino['dbname',oerp_destino['uid'],oerp_destino['pwd'],\
-			'ir.config_parameter','create',vals_parameter)	
-	else:
-		ret_parameter_ids = soc.execute(oerp_destino['dbname',oerp_destino['uid'],oerp_destino['pwd'],\
-			'ir.config_parameter','write',parameter_ids,vals_parameter)	
+				migrate_model(oerp_origen,oerp_destino,model,fields['fields'],\
+					filter_parm = fields['filter'])	
 
 	logging.info("Fin migración")
 	exit(0)

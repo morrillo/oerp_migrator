@@ -176,3 +176,51 @@ class res_company(osv.osv):
 		'origin_id': fields.integer('Origin ID'),
 		}
 res_company()
+
+class mrp_bom(osv.osv):
+	_name = "mrp.bom"
+	_inherit = "mrp.bom"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+mrp_bom()
+
+class product_pricelist(osv.osv):
+	_name = "product.pricelist"
+	_inherit = "product.pricelist"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+product_pricelist()
+
+class product_pricelist_item(osv.osv):
+	_name = "product.pricelist.item"
+	_inherit = "product.pricelist.item"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+product_pricelist_item()
+
+class product_pricelist_type(osv.osv):
+	_name = "product.pricelist.type"
+	_inherit = "product.pricelist.type"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+product_pricelist_type()
+
+class product_pricelist_version(osv.osv):
+	_name = "product.pricelist.version"
+	_inherit = "product.pricelist.version"
+
+	_columns = {
+		'origin_id': fields.integer('Origin ID'),
+		}
+product_pricelist_version()
+
+
+

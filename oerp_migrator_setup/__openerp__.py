@@ -28,7 +28,7 @@
     'description': "",
     'author': 'Gustavo Orrillo',
     'website': 'http://business.moldeo.coop',
-    'depends': ['base','product','account'],
+    'depends': ['base','product','account','mrp','stock'],
     'init_xml': [],
     'update_xml': [
     ],
