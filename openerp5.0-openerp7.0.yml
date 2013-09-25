@@ -18,6 +18,57 @@ destination:
     username: admin
     password: admin
 
+#res.users:
+#    sequence: 1
+#    fields: active,company_id,login,partner_id,password,signature,state,user_email
+res.country.state:
+    sequence: 1
+    fields: code,country_id,name
+res.bank:
+    sequence: 1
+    fields: active,bic,city,country,city,fax,code,name,phone,state,street,street2,zip
+#res.partner:
+#    sequence: 2
+#    fields: name,ref,city,comment,ean13,active,date,lang,customer,supplier,credit_limit,website,vat
+product.uom.categ:
+    sequence: 3
+    fields: name
+product.ul:
+    sequence: 4
+    fields: name,type
+product.category:
+    sequence: 5
+    fields: name,parent_id
+product.uom:
+     sequence: 5
+     fields: active,category_id,factor,factor_inv,name,rounding,uom_type
+#product.template:
+#    sequence: 6
+#    fields: categ_id,company_id,cost_method,description,description_purchase,description_sale,list_price,mes_type,name,produce_delay,product_manager,property_account_expense,property_account_income,rental,sale_ok,seller_ids,standard_price,state,supplier_taxes_id,taxes_id,type,uom_id,uom_po_id,uos_coeff,uos_id,volume,weight_net
+#product.product:
+#    sequence: 7
+#    fields: active,code,default_code,ean13,incoming_qty,lst_price,name_template,outgoing_qty,packaging,partner_ref,price,price_extra,price_margin,product_tmpl_id,qty_available,seller_delay,seller_qty,variants,virtual_available,stock_depends,pack_fixed_price
+#product.pack.line:
+#    sequence: 8
+#    fields: parent_product_id,quantity,product_id
+account.payment.term:
+    sequence: 8
+    fields: active,name,note
+account.fiscalyear:
+    sequence: 8
+    fields: code,company_id,date_start,date_stop,name,state
+account.payment.term.line:
+    sequence: 9
+    fields: days,days2,payment_id,value,value_amount
+account.period:
+    sequence: 9
+    fields: code,company_id,date_start,date_stop,fiscalyear_id,name,special,state
+account.invoice:
+    sequence: 100
+    fields: account_id,amount_tax,amount_total,amount_untaxed,check_total,comment,commercial_partner_id,company_id,currency_id,date_due,date_invoice,fiscal_position,internal_number,invoice_line,journal_id,name,number,origin,partner_bank_id,partner_id,reconciled,reference,reference_type,residual,sent,state,supplier_invoice_number,type,payment_term
+account.invoice.line:
+    sequence: 110
+    fields: discount,invoice_id,name,origin,partner_id,price_subtotal,price_unit,product_id,quantity,sequence
 product.pricelist:
     sequence: 1
     fields: name,currency_id,active,type
@@ -27,52 +78,3 @@ product.pricelist.version:
 product.pricelist.item:
     sequence: 50
     fields: price_round,price_discount,base_pricelist_id,sequence,price_max_margin,name,product_tmpl_id,product_id,base,price_version_id,min_quantity,price_min_margin,categ_id,price_surcharge
-#res.users:
-#    sequence: 1
-#    fields: active,company_id,login,partner_id,password,signature,state,user_email
-#res.country.state:
-#    sequence: 1
-#    fields: code,country_id,name
-#res.bank:
-#    sequence: 1
-#    fields: active,bic,city,country,city,fax,code,name,phone,state,street,street2,zip
-#res.partner:
-#    sequence: 2
-#    fields: name,ref,city,comment,ean13,active,date,lang,customer,supplier,credit_limit,website,vat
-#product.uom.categ:
-#    sequence: 3
-#    fields: name
-#product.ul:
-#    sequence: 4
-#    fields: name,type
-#product.category:
-#    sequence: 5
-#    fields: name,parent_id
-#product.uom:
-#     sequence: 5
-#     fields: active,category_id,factor,factor_inv,name,rounding,uom_type
-#product.template:
-#    sequence: 6
-#    fields: categ_id,company_id,cost_method,description,description_purchase,description_sale,list_price,mes_type,name,produce_delay,product_manager,property_account_expense,property_account_income,rental,sale_ok,seller_ids,standard_price,state,supplier_taxes_id,taxes_id,type,uom_id,uom_po_id,uos_coeff,uos_id,volume,weight_net
-#product.product:
-#    sequence: 7
-#    fields: active,code,default_code,ean13,incoming_qty,lst_price,name_template,outgoing_qty,packaging,partner_ref,price,price_extra,price_margin,product_tmpl_id,qty_available,seller_delay,seller_qty,variants,virtual_available
-#account.payment.term:
-#    sequence: 8
-#    fields: active,name,note
-#account.fiscalyear:
-#    sequence: 8
-#    fields: code,company_id,date_start,date_stop,name,state
-#account.payment.term.line:
-#    sequence: 9
-#    fields: days,days2,payment_id,value,value_amount
-#account.period:
-#    sequence: 9
-#    fields: code,company_id,date_start,date_stop,fiscalyear_id,name,special,state
-#account.invoice:
-#    sequence: 100
-#    fields: account_id,amount_tax,amount_total,amount_untaxed,check_total,comment,commercial_partner_id,company_id,currency_id,date_due,date_invoice,fiscal_position,internal_number,invoice_line,journal_id,name,number,origin,partner_bank_id,partner_id,reconciled,reference,reference_type,residual,sent,state,supplier_invoice_number,type
-#    filter: date_invoice
-#account.invoice.line:
-#    sequence: 110
-#    fields: discount,invoice_id,name,origin,partner_id,price_subtotal,price_unit,product_id,quantity,sequence
