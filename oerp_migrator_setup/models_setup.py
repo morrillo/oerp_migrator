@@ -2,6 +2,17 @@ from openerp.osv import osv,fields
 import urllib as u
 import string
 
+class oerp_migrator_control(osv.osv):
+	_name = "oerp_migrator.control"
+	_description = "Control table with the last processed ID"
+
+	_columns = {
+		'model_name': fields.char('Model name',size=64),
+		'max_id': fields.integer('Max processed ID')
+		}
+
+oerp_migrator_control()
+
 class res_users(osv.osv):
 	_name = "res.users"
 	_inherit = "res.users"

@@ -11,6 +11,45 @@ import logging
 from datetime import date
 from datetime import datetime
 
+def get_model_id(oerp_destino,model=None):
+	""" Return model processed ID """
+	if model == None:
+		return_id = 0
+	else:
+		sock = oerp_destino['sock']
+		return_id = 0
+		control_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+			'oerp_migrator.control','search',[('model_name','=',model)])
+		if control_ids:
+			data = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+				'oerp_migrator.control','read',control_ids,['max_id'])
+			for data_item in data:
+				return_id = data_item['max_id']
+
+	return return_id
+
+def update_model_id(oerp_destino,model=None,maxId=0):
+	""" Updates control table with maximum processed ID """
+	if model == None:
+		return None
+	sock = oerp_destino['sock']
+	control_ids = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+		'oerp_migrator.control','search',[('model_name','=',model)])
+	vals_update = {
+		'max_id': maxId
+		}
+	vals_insert = {
+		'model_name': model,
+		'max_id': maxId
+		}
+	if control_ids:
+		return_id = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+			'oerp_migrator.control','write',control_ids,vals_update)
+	else:
+		return_id = sock.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
+			'oerp_migrator.control','create',vals_insert)
+	return None
+
 def get_field_type(oerp_origen,model):
 
 	if not oerp_origen or not model:
@@ -98,7 +137,8 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 	if filter_parm == '':	
 		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
 	else:
-		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
+		filter_id = get_model_id(oerp_destino,model)
+		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[('id','>',filter_id)])
 	#if get_date_from(oerp_destino) == '':
 	#	data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
 	#else:
@@ -111,6 +151,7 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 	fields.append('create_date')
 	data_items = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'read',data_ids,fields)
 
+	max_id = 0
 	for data in data_items:
 		dict_insert = {}
 		for field in fields:
@@ -135,6 +176,8 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 								dict_insert[field] = 1
 		if 'id' not in dict_insert.keys():
 			dict_insert['origin_id'] = data['id']
+		if data['id'] > max_id:
+			max_id = data['id']
 		logging.debug(dict_insert)
 		sock_destino = oerp_destino['sock']
 		destination_ids = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'], \
@@ -147,8 +190,10 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 				data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
 					 model,'create',dict_insert)
 			except:
-				import pdb;pdb.set_trace()
+				# import pdb;pdb.set_trace()
+				logging.error(dict_insert)
 				pass
+	update_model_id(oerp_destino,model,max_id)
 	logging.info("Fin migración modelo %s"%(model))
 	return None
 
