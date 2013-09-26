@@ -134,19 +134,11 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 	
 	# data_obj = oerp_origen.get(model)
 	sock = oerp_origen['sock']
-	if filter_parm == '':	
+	if filter_parm <> '':	
 		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
 	else:
 		filter_id = get_model_id(oerp_destino,model)
 		data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[('id','>',filter_id)])
-	#if get_date_from(oerp_destino) == '':
-	#	data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',[])
-	#else:
-	#	date_from = get_date_from(oerp_destino)
-	#	date_object = datetime.strptime(date_from,'%Y-%m-%d')
-	#	import pdb;pdb.set_trace()
-	#	data_ids = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'search',\
-	#		[('create_date','>',date_from)])
 	field_types = get_field_type(oerp_origen,model)
 	fields.append('create_date')
 	data_items = sock.execute(oerp_origen['dbname'],oerp_origen['uid'],oerp_origen['pwd'], model,'read',data_ids,fields)
@@ -190,8 +182,8 @@ def migrate_model(oerp_origen = None, oerp_destino = None, model = None, fields 
 				data_items = sock_destino.execute(oerp_destino['dbname'],oerp_destino['uid'],oerp_destino['pwd'],\
 					 model,'create',dict_insert)
 			except:
-				# import pdb;pdb.set_trace()
 				logging.error(dict_insert)
+				# import pdb;pdb.set_trace()
 				pass
 	update_model_id(oerp_destino,model,max_id)
 	logging.info("Fin migración modelo %s"%(model))
@@ -222,7 +214,7 @@ def validate_setup(dict_models = {}, oerp_destino = {}):
 
 def main(configfile_parm = ''):
 
-	logging.basicConfig(filename='/home/gustavo/work/biomed/migrator.log',level=logging.DEBUG)
+	logging.basicConfig(filename='migrator.log',level=logging.DEBUG)
 	logging.info("Comenzando la migración")
 	stream = file(configfile_parm,'r')
 	dict_yaml = yaml.safe_load(stream)
